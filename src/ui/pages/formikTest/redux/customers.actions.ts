@@ -1,31 +1,20 @@
 import * as api from 'api';
 import { CallAPIActionType, CallAPIMiddlewareAction } from 'utils/callAPIMiddleware';
-
+import normalizeList, { NLReturnObject } from 'utils/normalizeList';
 
 import * as types from './customers.actionTypes';
 
-type Params = { att: string };
+export type Actions = GetAllItemsTypes;
 
-type Act = {
-  type: typeof types.DELETE_ITEM_CUSTOMERS,
-  payload: {
-    hh: string
-  }
-};
-
-export type Actions = GetAllItemsTypes | Act;
-
-export type GetAllItemsTypes = CallAPIActionType<
-[
+export type GetAllItemsTypes = CallAPIActionType<[
   typeof types.SELECT_CUSTOMERS,
   typeof types.SELECT_CUSTOMERS_SUCCESS,
   typeof types.SELECT_CUSTOMERS_FAILURE
 ],
 { page: number },
-{ data: { att: string } }
->;
+{ items: NLReturnObject<Pick<api.GetAllItemsReturnType, 'items'>> }>;
 
-export const getAllItems = ({ page = 0 }): CallAPIMiddlewareAction => ({
+export const getAllItems = ({ page = 0 }: { page?: number } = {}): CallAPIMiddlewareAction => ({
   types: [
     types.SELECT_CUSTOMERS,
     types.SELECT_CUSTOMERS_SUCCESS,
@@ -33,7 +22,7 @@ export const getAllItems = ({ page = 0 }): CallAPIMiddlewareAction => ({
   ],
   callAPI: () => api.getAllItems(page),
   payload: { page },
-  parseResponse: (data: Params) => ({ data: data.att }),
+  parseResponse: (data: api.GetAllItemsReturnType) => ({ items: normalizeList(data.items) }),
   // parseResponse: transforms.getModelsResponse,
   cancelPrevRequest: true,
 });

@@ -14,6 +14,9 @@ export const Content = styled.div`
 `;
 
 export const WrapBody = styled.div`
+    position: absolute;
+    height: 100%;
+    width: 100%;
   padding: 24px;
   min-height: 280px;
   overflow-x: hidden;

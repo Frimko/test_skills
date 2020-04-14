@@ -53,7 +53,7 @@ export type CallAPIActionType<
   > =
   CallAPIRequestReturnType<GTypes[0], GPayload>
   | CallAPISuccessReturnType<GTypes[1], GPayload, GParseResponseReturn>
-  | CallAPIFailureTypeReturnType<GTypes[3], GPayload>;
+  | CallAPIFailureTypeReturnType<GTypes[2], GPayload>;
 
 const callAPIMiddleware: Middleware = ({ dispatch }) => (next) =>
   async (action: CallAPIMiddlewareAction) => {

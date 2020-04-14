@@ -1,0 +1,36 @@
+@import '~normalize.css';
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f3f3f3;
+  overflow: hidden;
+}
+
+input::-ms-clear {
+  display: none !important;
+}
+
+[hidden] {
+  display: none !important;
+}

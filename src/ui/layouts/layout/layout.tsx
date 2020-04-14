@@ -19,7 +19,11 @@ const Layout: React.FC<Props> = ({ children }) => (
     <SidePanel sidePanel={<Menu />} />
     <s.ContainerPage>
       <Header />
-      {children}
+      <s.ContentWrapper>
+        <s.Content>
+          {children}
+        </s.Content>
+      </s.ContentWrapper>
     </s.ContainerPage>
   </s.ContainerBody>
 );

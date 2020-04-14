@@ -1,4 +1,5 @@
 import api from 'utils/API';
+import { AxiosPromise } from 'axios';
 
 /* const endpoint = 'http://localhost:8000/api/';
 
@@ -7,7 +8,24 @@ const publicApi = {
   timeout: 5000,
 }; */
 
-export const getAllItems = (page: number) => api.get({ url: `customers?page=${page}` });
+
+type GetAllItemsReturnItemType = {
+  id: number,
+  name: string,
+  address: string,
+  phone: string,
+  createdAt: string,
+  updatedAt: string,
+};
+export type GetAllItemsReturnType = {
+  items: GetAllItemsReturnItemType[],
+  pages: number
+};
+
+export const getAllItems = (page: number): AxiosPromise<GetAllItemsReturnType> =>
+  api.get({ url: `customers?page=${page}` });
+
+
 export const getItem = (id: number) => api.get({ url: `/customers/${id}` });
 export const deleteItem = (id: number) => api.delete({ url: `/customers/${id}` });
 

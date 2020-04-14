@@ -72,7 +72,7 @@ const timer = (cb) => {
 app.route('/api/customers').get((req, res) => {
   timer(() => {
     Customer.count().then((count) => {
-      const limit = 30;
+      const limit = 20;
       Customer.findAll({ offset: (req.query.page * limit), limit }).then((customers) => {
         res.json({
           items: customers,

@@ -38,8 +38,10 @@ module.exports = {
       'error',
       { 'multiline': true, 'minProperties': 3 }
     ],
+    "max-len": ["error", 120],
     'react/prop-types': 'off',
     'react/destructuring-assignment': 'off',
+    'react/jsx-props-no-spreading': 'off',
     'arrow-parens': 'off',
     'import/prefer-default-export': 'off',
     'implicit-arrow-linebreak': 'off',

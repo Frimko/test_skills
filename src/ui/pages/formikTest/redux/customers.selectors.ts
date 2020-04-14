@@ -28,6 +28,16 @@ export const items = createSelector(
   (ids, byId) => ids.map(id => byId[id]),
 );
 
+export const curPage = createSelector(
+  customersItemsSelector,
+  (customers) => customers.curPage,
+);
+
+export const isLoading = createSelector(
+  customersItemsSelector,
+  (customers) => customers.isLoading,
+);
+
 export const pagesCount = createSelector(
   customersItemsSelector,
   (customers) => customers.pageCount,

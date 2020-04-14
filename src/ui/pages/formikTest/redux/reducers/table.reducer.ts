@@ -8,6 +8,7 @@ export type TableStateType = {
     },
     ids: string[],
   },
+  isLoading: boolean,
   pageCount: number,
   curPage: number,
   errorText: null | string,
@@ -18,6 +19,7 @@ const initialState: TableStateType = {
     byId: {},
     ids: [],
   },
+  isLoading: false,
   pageCount: 0,
   curPage: 0,
   errorText: null,
@@ -28,53 +30,66 @@ export default (state = initialState, action: Actions): TableStateType => {
     case types.SELECT_CUSTOMERS:
       return {
         ...state,
-        ...action.payload,
+        errorText: null,
+        isLoading: true,
         curPage: action.payload.page,
+      };
+    case types.SELECT_CUSTOMERS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        items: action.payload.items,
+        curPage: action.payload.page,
+      };
+    case types.SELECT_CUSTOMERS_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
       };
 
       /*
-    case types.SET_TAGS_AND_META_SUCCESS:
-      return {
-        ...state,
-        [payload.id]: {
-          ...state[payload.id],
-          overview: {
-            ...state[payload.id].overview,
-            tags: payload.tags,
-            user_meta: payload.user_meta,
-          },
+  case types.SET_TAGS_AND_META_SUCCESS:
+    return {
+      ...state,
+      [payload.id]: {
+        ...state[payload.id],
+        overview: {
+          ...state[payload.id].overview,
+          tags: payload.tags,
+          user_meta: payload.user_meta,
         },
-      };
+      },
+    };
 
-    case types.CREATE_MODEL_SUCCESS:
-      return {
-        ...state,
-        [payload.id]: payload,
-      };
+  case types.CREATE_MODEL_SUCCESS:
+    return {
+      ...state,
+      [payload.id]: payload,
+    };
 
-    case types.DELETE_MODEL_SUCCESS:
-      return omit(state, payload.id);
+  case types.DELETE_MODEL_SUCCESS:
+    return omit(state, payload.id);
 
-    case types.EDIT_MODEL_SUCCESS:
-    case types.GET_MODEL_OVERVIEW_SUCCESS:
-    case types.GET_MODEL_DETAILS_SUCCESS:
-    case types.EDIT_MODEL_DETAILS_SUCCESS:
-      return {
-        ...state,
-        [payload.id]: {
-          ...state[payload.id],
-          ...payload,
-        },
-      };
+  case types.EDIT_MODEL_SUCCESS:
+  case types.GET_MODEL_OVERVIEW_SUCCESS:
+  case types.GET_MODEL_DETAILS_SUCCESS:
+  case types.EDIT_MODEL_DETAILS_SUCCESS:
+    return {
+      ...state,
+      [payload.id]: {
+        ...state[payload.id],
+        ...payload,
+      },
+    };
 
-    case types.GET_MODEL_TRAINING_SUCCESS:
-      return {
-        ...state,
-        [payload.model.id]: {
-          ...state[payload.model.id],
-          ...payload.model,
-        },
-      };
+  case types.GET_MODEL_TRAINING_SUCCESS:
+    return {
+      ...state,
+      [payload.model.id]: {
+        ...state[payload.model.id],
+        ...payload.model,
+      },
+    };
 */
 
     default:
