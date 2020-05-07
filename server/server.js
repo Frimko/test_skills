@@ -3,56 +3,18 @@ const cors = require('cors');
 bodyParser = require('body-parser'),
   http = require('http'),
   path = require('path'),
-  sqlite3 = require('sqlite3'),
-  Sequelize = require('sequelize'),
   _ = require('lodash');
 
 
-sequelize = new Sequelize(`sqlite://${path.join(__dirname, 'invoices.sqlite')}`, {
-  dialect: 'sqlite',
-  storage: path.join(__dirname, 'invoices.sqlite'),
-});
-
-Customer = sequelize.define('customers', {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  name: {
-    type: Sequelize.STRING,
-  },
-  address: {
-    type: Sequelize.STRING,
-  },
-  phone: {
-    type: Sequelize.STRING,
-  },
-});
-
-sequelize.sync()
-  .then(() => {
-    Customer.truncate();
+const customerTable = [];
+for (let i = 0; i <= 300; i++) {
+  customerTable.push({
+    id: i,
+    name: `batman${i}`,
+    address: Math.random() * 1000,
+    phone: `777${Math.random() * 1000}`,
   })
-  .then(() => {
-
-    Customer.create({
-      name: 'catwomen',
-      address: 'DS',
-      phone: '666',
-    });
-
-    for (let i = 0; i <= 300; i++) {
-      Customer.create({
-        name: `batman${i}`,
-        address: Math.random() * 1000,
-        phone: `777${Math.random() * 1000}`,
-      });
-    }
-  })
-  .catch((e) => {
-    console.log('ERROR SYNCING WITH DB', e);
-  });
+}
 
 const app = module.exports = express();
 app.set('port', process.env.PORT || 8000);
@@ -69,51 +31,48 @@ const timer = (cb) => {
 };
 // CUSTOMERS API
 
-app.route('/api/customers').get((req, res) => {
-  timer(() => {
-    Customer.count().then((count) => {
+app.route('/api/customers')
+  .get((req, res) => {
+    timer(() => {
+      const count = customerTable.length;
       const limit = 20;
-      Customer.findAll({ offset: (req.query.page * limit), limit }).then((customers) => {
-        res.json({
-          items: customers,
-          pages: Math.ceil(count / limit),
-        });
+      const page = req.query.page;
+      const startIndex = page * limit;
+
+      res.json({
+        items: customerTable.slice(startIndex, startIndex + limit),
+        pages: Math.ceil(count / limit),
       });
     });
-  });
-})
+  })
   .post((req, res) => {
     timer(() => {
-      const customer = Customer.build(_.pick(req.body, ['name', 'address', 'phone']));
-      customer.save().then((customer) => {
-        res.json(customer);
-      });
-    });
-  });
-
-app.route('/api/customers/:customer_id').get((req, res) => {
-  timer(() => {
-    Customer.findById(req.params.customer_id).then((customer) => {
+      const customer = {
+        id: customerTable.length,
+        ..._.pick(req.body, ['name', 'address', 'phone'])
+      };
+      customerTable.push(customer)
       res.json(customer);
     });
   });
-})
+
+app.route('/api/customers/:customer_id')
+  .get((req, res) => {
+    timer(() => {
+      res.json(customerTable.find(item => item.id === req.params.customer_id));
+    });
+  })
   .put((req, res) => {
     timer(() => {
-      Customer.findById(req.params.customer_id).then((customer) => {
-        customer.update(_.pick(req.body, ['name', 'address', 'phone'])).then((customer) => {
-          res.json(customer);
-        });
-      });
+      const key = customerTable.findIndex(item => item.id === req.params.customer_id)
+      customerTable[key] = _.pick(req.body, ['name', 'address', 'phone']);
+      res.json(customerTable[key]);
     });
   })
   .delete((req, res) => {
     timer(() => {
-      Customer.findById(req.params.customer_id).then((customer) => {
-        customer.destroy().then((customer) => {
-          res.json(customer);
-        });
-      });
+      _.remove(customerTable, ({ id }) => id == req.params.customer_id);
+      res.json(customerTable);
     });
   });
 
