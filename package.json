@@ -24,6 +24,7 @@
     "@types/redux-thunk": "^2.1.0",
     "@types/reselect": "^2.2.0",
     "@types/styled-components": "^5.0.1",
+    "@types/yup": "^0.29.0",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
     "formik": "^2.1.4",
@@ -42,7 +43,8 @@
     "reselect": "^4.0.0",
     "styled-components": "^5.0.1",
     "typeface-roboto": "^0.0.75",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "yup": "^0.29.0"
   },
   "scripts": {
     "start": "react-scripts start",

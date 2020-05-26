@@ -1,5 +1,5 @@
-export type NLReturnObject<T> = {
-  ids: string[],
+export type NLReturnObject<T, U = string> = {
+  ids: U[],
   byId: {
     [id: string]: T
   }

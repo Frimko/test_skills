@@ -1,3 +1,4 @@
+import * as api from 'api';
 import React from 'react';
 import {
   useSelector,
@@ -31,14 +32,30 @@ const FormikTest: React.FC = () => {
 
   const handleChangePage = (page: number) => dispatch(customersActions.getAllItems({ page }));
 
+  const addItem = (data: api.CustomerParams) => dispatch(customersActions.addItem(data));
+  const updateItem = (id: number, data: api.CustomerParams) => {
+    console.log('data', { ...data });
+    return dispatch(customersActions.updateItem(id, data));
+  };
+  const deleteItem = (id: number) => dispatch(customersActions.deleteItem(id));
+
+  // @ts-ignore
+  window.object_api = {
+    handleChangePage,
+    updateItem,
+    deleteItem,
+  };
+
   return (
     <Page title="FormikTest">
       <Table
         items={items}
-        onAdd={console.log}
         isLoading={isLoading}
         page={curPage}
         onChangePage={handleChangePage}
+        onAdd={addItem}
+        onUpdate={updateItem}
+        onDelete={deleteItem}
       />
     </Page>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from '@material-ui/core/Modal';
+import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import { useUpdateEffect } from 'react-use';
@@ -45,10 +46,15 @@ const TransitionsModal: React.FC<Props> = ({
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 500 }}
     >
-      <Fade in={open}>
-        <s.BodyWrapper>
-          {children}
-        </s.BodyWrapper>
+      <Fade
+        in={open}
+        style={{ outline: 'none' }}
+      >
+        <Box boxShadow={3}>
+          <s.BodyWrapper>
+            {children}
+          </s.BodyWrapper>
+        </Box>
       </Fade>
     </Modal>
   );

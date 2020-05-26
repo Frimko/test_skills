@@ -2,12 +2,13 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import Button from '@material-ui/core/Button';
 import Add from '@material-ui/icons/Add';
+import _pick from 'lodash/pick';
 
-import TransitionsModal from 'ui/pages/formikTest/modal';
+import TransitionsModal, { FormSubmitDataType } from 'ui/pages/formikTest/modal';
 
 import * as s from './table.style';
 
-type GetAllItemsReturnItemType = {
+type ItemType = {
   id: number,
   name: string,
   address: string,
@@ -17,32 +18,45 @@ type GetAllItemsReturnItemType = {
 };
 type TablePropsType = {
   onChangePage: (page: number) => Promise<any>,
-  onAdd?: () => void,
-  // onUpdate?: () => void,
-  // onDelete?: () => void,
+  onAdd: (values: FormSubmitDataType) => Promise<any>,
+  onUpdate: (id: number, values: FormSubmitDataType) => Promise<any>,
+  onDelete: (id: number) => Promise<any>,
   page?: number,
   isLoading?: boolean,
-  items: GetAllItemsReturnItemType[]
+  items: ItemType[]
 };
 
 const Table: React.FC<TablePropsType> = ({
   items,
   onChangePage,
   isLoading,
+  onAdd,
+  onUpdate,
+  onDelete,
   page = 0,
 }) => {
   const [isOpen, onOpenPopup] = React.useState(false);
+  const [initialValuesForm, setInitialValuesForm] = React.useState<FormSubmitDataType & {id: number}>();
 
-  const handleOpenPopup = () => onOpenPopup(false);
+  const handleOpenPopup = () => onOpenPopup(true);
+  const handleClosePopup = () => onOpenPopup(false);
+  const handleSubmit = initialValuesForm
+    ? (values: FormSubmitDataType) => onUpdate(initialValuesForm.id, values)
+    : onAdd;
 
   return (
     <>
-      <TransitionsModal isOpen={isOpen} onClose={handleOpenPopup} />
+      <TransitionsModal
+        isOpen={isOpen}
+        onClose={handleClosePopup}
+        onSubmit={handleSubmit}
+        initialValues={initialValuesForm}
+      />
       <MaterialTable
         title={(
           <s.ButtonAddWrapper>
             <Button
-              onClick={() => onOpenPopup(true)}
+              onClick={handleOpenPopup}
               variant="contained"
               color="primary"
               endIcon={<Add />}
@@ -75,18 +89,21 @@ const Table: React.FC<TablePropsType> = ({
         ]}
         totalCount={300}
         page={page}
-        data={items}
+        data={items.map(item => ({ ...item }))} // FUCK YOU author! https://github.com/mbrn/material-table/issues/1371
         isLoading={isLoading}
         actions={[
           {
             icon: 'edit',
             tooltip: 'Edit',
-            onClick: (event, rowData: any) => alert(`You saved ${rowData.name}`),
+            onClick: (event, rowData: any) => {
+              setInitialValuesForm(_pick(rowData, ['id', 'name', 'address', 'phone']));
+              handleOpenPopup();
+            },
           },
           {
             icon: 'delete',
             tooltip: 'Delete',
-            onClick: (event, rowData: any) => alert(`You want to delete ${rowData.name}`),
+            onClick: (event, rowData: any) => onDelete(rowData.id),
           },
         ]}
       />

@@ -4,15 +4,13 @@ import normalizeList, { NLReturnObject } from 'utils/normalizeList';
 
 import * as types from './customers.actionTypes';
 
-export type Actions = GetAllItemsTypes;
-
 export type GetAllItemsTypes = CallAPIActionType<[
   typeof types.SELECT_CUSTOMERS,
   typeof types.SELECT_CUSTOMERS_SUCCESS,
   typeof types.SELECT_CUSTOMERS_FAILURE
 ],
 { page: number },
-{ items: NLReturnObject<Pick<api.GetAllItemsReturnType, 'items'>> }>;
+{ items: NLReturnObject<api.GetAllItemsReturnItemType, number> }>;
 
 export const getAllItems = ({ page = 0 }: { page?: number } = {}): CallAPIMiddlewareAction => ({
   types: [
@@ -23,179 +21,63 @@ export const getAllItems = ({ page = 0 }: { page?: number } = {}): CallAPIMiddle
   callAPI: () => api.getAllItems(page),
   payload: { page },
   parseResponse: (data: api.GetAllItemsReturnType) => ({ items: normalizeList(data.items) }),
-  // parseResponse: transforms.getModelsResponse,
+  cancelPrevRequest: true,
+});
+
+export type AddItemTypes = CallAPIActionType<[
+  typeof types.SET_ITEM_CUSTOMERS,
+  typeof types.SET_ITEM_CUSTOMERS_SUCCESS,
+  typeof types.SET_ITEM_CUSTOMERS_FAILURE
+],
+{},
+{ item: api.GetAllItemsReturnItemType }>;
+
+export const addItem = (item: api.CustomerParams): CallAPIMiddlewareAction => ({
+  types: [
+    types.SET_ITEM_CUSTOMERS,
+    types.SET_ITEM_CUSTOMERS_SUCCESS,
+    types.SET_ITEM_CUSTOMERS_FAILURE,
+  ],
+  callAPI: () => api.addItem(item),
+  parseResponse: (data: api.GetAllItemsReturnItemType) => ({ item: data }),
+  cancelPrevRequest: true,
+});
+
+export type UpdateItemTypes = CallAPIActionType<[
+  typeof types.EDIT_ITEM_CUSTOMERS,
+  typeof types.EDIT_ITEM_CUSTOMERS_SUCCESS,
+  typeof types.EDIT_ITEM_CUSTOMERS_FAILURE
+],
+{},
+api.GetAllItemsReturnItemType>;
+
+export const updateItem = (id: number, data: api.CustomerParams): CallAPIMiddlewareAction => ({
+  types: [
+    types.EDIT_ITEM_CUSTOMERS,
+    types.EDIT_ITEM_CUSTOMERS_SUCCESS,
+    types.EDIT_ITEM_CUSTOMERS_FAILURE,
+  ],
+  callAPI: () => api.updateItem(id, data),
+  cancelPrevRequest: true,
+});
+
+export type DeleteItemTypes = CallAPIActionType<[
+  typeof types.DELETE_ITEM_CUSTOMERS,
+  typeof types.DELETE_ITEM_CUSTOMERS_SUCCESS,
+  typeof types.DELETE_ITEM_CUSTOMERS_FAILURE
+],
+{ id: number }>;
+
+export const deleteItem = (itemId: number): CallAPIMiddlewareAction => ({
+  types: [
+    types.DELETE_ITEM_CUSTOMERS,
+    types.DELETE_ITEM_CUSTOMERS_SUCCESS,
+    types.DELETE_ITEM_CUSTOMERS_FAILURE,
+  ],
+  callAPI: () => api.deleteItem(itemId),
+  parseResponse: ({ id }: { id: number }) => ({ id }),
   cancelPrevRequest: true,
 });
 
 
-/*
-export const getAllItems = (type) => {
-    let dispatchType;
-    switch (type) {
-        case 'customers':
-            dispatchType = CUSTOMERS_FETCH_REQUEST_SUCCESS
-            break;
-        case 'products':
-            dispatchType = PRODUCTS_FETCH_REQUEST_SUCCESS
-            break;
-        default:
-            dispatchType = FETCH_REQUEST_FAILURE
-            break;
-    }
-    return (dispatch) => {
-        dispatch(showSpinner);
-        api.getAllItems(type)
-            .then(({data}) => {
-                dispatch({
-                    type: dispatchType,
-                    payload: data
-                })
-            })
-            .catch((result) => {
-                dispatch({
-                    type: FETCH_REQUEST_FAILURE,
-                    payload: result
-                })
-            })
-            .then(() => {
-                dispatch(hideSpinner)
-            })
-    }
-}
-
-export const deleteItem = (type, id) => {
-    return (dispatch) => {
-        api.deleteItem(type, id)
-            .catch((result) => {
-                dispatch({
-                    type: FETCH_REQUEST_FAILURE,
-                    payload: result
-                })
-            })
-            .then(() => {
-                dispatch(getAllItems(type));
-            })
-    }
-}
-
-export const showUpdateModal = (type, fields, id) => {
-    let dispatchType;
-    switch (type) {
-        case 'customers':
-            dispatchType = SHOW_CUSTOMERS_MODAL
-            break;
-        case 'products':
-            dispatchType = SHOW_PRODUCTS_MODAL
-            break;
-        default:
-            dispatchType = FETCH_REQUEST_FAILURE
-            break;
-    }
-    return {
-        type: dispatchType,
-        fields: fields,
-        id: id,
-        isUpdateType: true
-    }
-}
-export const showAddModal = (type, fields) => {
-    let dispatchType;
-    switch (type) {
-        case 'customers':
-            dispatchType = SHOW_CUSTOMERS_MODAL
-            break;
-        case 'products':
-            dispatchType = SHOW_PRODUCTS_MODAL
-            break;
-        default:
-            dispatchType = FETCH_REQUEST_FAILURE
-            break;
-    }
-    return {
-        type: dispatchType,
-        fields: fields,
-        isUpdateType: false
-    }
-}
-
-export const hideModal = (type) => {
-    let dispatchType;
-    switch (type) {
-        case 'customers':
-            dispatchType = HIDE_CUSTOMERS_MODAL
-            break;
-        case 'products':
-            dispatchType = HIDE_PRODUCTS_MODAL
-            break;
-        default:
-            dispatchType = FETCH_REQUEST_FAILURE
-            break;
-    }
-    return {type: dispatchType}
-}
-
-export const addCustomer = (data) => {
-    let type = 'customers';
-    return (dispatch) => {
-        api.setCustomer(data)
-            .catch((result) => {
-                dispatch({
-                    type: FETCH_REQUEST_FAILURE,
-                    payload: result
-                })
-            })
-            .then(() => {
-                dispatch(getAllItems(type));
-                dispatch(hideModal(type));
-            })
-    }
-}
-export const updateCustomer = (id, data) => {
-    let type = 'customers';
-    return (dispatch) => {
-        api.updateCustomer(id, data)
-            .catch((result) => {
-                dispatch({
-                    type: FETCH_REQUEST_FAILURE,
-                    payload: result
-                })
-            })
-            .then(() => {
-                dispatch(getAllItems(type));
-                dispatch(hideModal(type));
-            })
-    }
-}
-
-export const addProduct = (data) => {
-    let type = 'products';
-    return (dispatch) => {
-        api.setProduct(data)
-            .catch((result) => {
-                dispatch({
-                    type: FETCH_REQUEST_FAILURE,
-                    payload: result
-                })
-            })
-            .then(() => {
-                dispatch(getAllItems(type));
-                dispatch(hideModal(type));
-            })
-    }
-}
-export const updateProduct = (id, data) => {
-    let type = 'products';
-    return (dispatch) => {
-        api.updateProduct(id, data)
-            .catch((result) => {
-                dispatch({
-                    type: FETCH_REQUEST_FAILURE,
-                    payload: result
-                })
-            })
-            .then(() => {
-                dispatch(getAllItems(type));
-                dispatch(hideModal(type));
-            })
-    }
-} */
+export type Actions = GetAllItemsTypes | UpdateItemTypes | AddItemTypes | DeleteItemTypes;

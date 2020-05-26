@@ -13,6 +13,8 @@ for (let i = 0; i <= 300; i++) {
     name: `batman${i}`,
     address: Math.random() * 1000,
     phone: `777${Math.random() * 1000}`,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   })
 }
 
@@ -49,7 +51,9 @@ app.route('/api/customers')
     timer(() => {
       const customer = {
         id: customerTable.length,
-        ..._.pick(req.body, ['name', 'address', 'phone'])
+        ..._.pick(req.body, ['name', 'address', 'phone']),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       customerTable.push(customer)
       res.json(customer);
@@ -59,20 +63,26 @@ app.route('/api/customers')
 app.route('/api/customers/:customer_id')
   .get((req, res) => {
     timer(() => {
-      res.json(customerTable.find(item => item.id === req.params.customer_id));
+      res.json(customerTable.find(item => item.id === Number(req.params.customer_id)));
     });
   })
   .put((req, res) => {
     timer(() => {
-      const key = customerTable.findIndex(item => item.id === req.params.customer_id)
-      customerTable[key] = _.pick(req.body, ['name', 'address', 'phone']);
-      res.json(customerTable[key]);
+      const key = customerTable.findIndex(item => item.id === Number(req.params.customer_id));
+      if(key >= 0){
+        customerTable[key] = {
+          ...customerTable[key],
+          ..._.pick(req.query, ['name', 'address', 'phone']),
+          updatedAt: new Date(),
+        };
+        res.json(customerTable[key]);
+      }
     });
   })
   .delete((req, res) => {
     timer(() => {
-      _.remove(customerTable, ({ id }) => id == req.params.customer_id);
-      res.json(customerTable);
+      _.remove(customerTable, ({ id }) => id == Number(req.params.customer_id));
+      res.json({ id: Number(req.params.customer_id) });
     });
   });
 

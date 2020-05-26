@@ -9,7 +9,7 @@ const publicApi = {
 }; */
 
 
-type GetAllItemsReturnItemType = {
+export type GetAllItemsReturnItemType = {
   id: number,
   name: string,
   address: string,
@@ -27,11 +27,10 @@ export const getAllItems = (page: number): AxiosPromise<GetAllItemsReturnType> =
 
 
 export const getItem = (id: number) => api.get({ url: `/customers/${id}` });
-export const deleteItem = (id: number) => api.delete({ url: `/customers/${id}` });
 
-type CustomerParams = { name: string, address: string, phone: string };
+export type CustomerParams = { name: string, address: string, phone: string };
 
-export const addCustomer = ({
+export const addItem = ({
   name, address, phone,
 }: CustomerParams) => api.post({
   url: '/customers',
@@ -40,7 +39,7 @@ export const addCustomer = ({
   },
 });
 
-export const updateCustomer = (id: number, {
+export const updateItem = (id: number, {
   name, address, phone,
 }: CustomerParams) => api.put({
   url: `/customers/${id}`,
@@ -48,3 +47,5 @@ export const updateCustomer = (id: number, {
     name, address, phone,
   },
 });
+
+export const deleteItem = (id: number) => api.delete({ url: `/customers/${id}` });

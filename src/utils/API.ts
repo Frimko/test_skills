@@ -31,7 +31,6 @@ type ConfigApi = Partial<AxiosRequestConfig> & { requestId?: string };
 
 const request = async (config: ConfigApi) => {
   const url = buildUrl(config.url || '', BASE_URL);
-  console.log('url', config.url);
   const { requestId, ...restConfig } = config;
   const cancelSource = CancelToken.source();
 

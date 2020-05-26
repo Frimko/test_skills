@@ -1,12 +1,16 @@
+import _omit from 'lodash/omit';
+
+import * as api from 'api';
+
 import * as types from '../customers.actionTypes';
 import { Actions } from '../customers.actions';
 
 export type TableStateType = {
   items: {
     byId: {
-      [key: string]: any
+      [key: string]: api.GetAllItemsReturnItemType
     },
-    ids: string[],
+    ids: number[],
   },
   isLoading: boolean,
   pageCount: number,
@@ -41,56 +45,46 @@ export default (state = initialState, action: Actions): TableStateType => {
         items: action.payload.items,
         curPage: action.payload.page,
       };
+    case types.SET_ITEM_CUSTOMERS_SUCCESS:
+      return {
+        ...state,
+        items: {
+          ids: [
+            ...state.items.ids,
+            action.payload.item.id,
+          ],
+          byId: {
+            ...state.items.byId,
+            [action.payload.item.id]: action.payload.item,
+          },
+        },
+      };
+    case types.EDIT_ITEM_CUSTOMERS_SUCCESS:
+      return {
+        ...state,
+        items: {
+          ...state.items,
+          byId: {
+            ...state.items.byId,
+            [action.payload.id]: action.payload,
+          },
+        },
+      };
+    case types.DELETE_ITEM_CUSTOMERS_SUCCESS:
+      return {
+        ...state,
+        items: {
+          byId: _omit(state.items.byId, action.payload.id),
+          ids: state.items.ids.filter(id => id !== action.payload.id),
+        },
+      };
+    case types.EDIT_ITEM_CUSTOMERS:
     case types.SELECT_CUSTOMERS_FAILURE:
       return {
         ...state,
         isLoading: false,
       };
 
-      /*
-  case types.SET_TAGS_AND_META_SUCCESS:
-    return {
-      ...state,
-      [payload.id]: {
-        ...state[payload.id],
-        overview: {
-          ...state[payload.id].overview,
-          tags: payload.tags,
-          user_meta: payload.user_meta,
-        },
-      },
-    };
-
-  case types.CREATE_MODEL_SUCCESS:
-    return {
-      ...state,
-      [payload.id]: payload,
-    };
-
-  case types.DELETE_MODEL_SUCCESS:
-    return omit(state, payload.id);
-
-  case types.EDIT_MODEL_SUCCESS:
-  case types.GET_MODEL_OVERVIEW_SUCCESS:
-  case types.GET_MODEL_DETAILS_SUCCESS:
-  case types.EDIT_MODEL_DETAILS_SUCCESS:
-    return {
-      ...state,
-      [payload.id]: {
-        ...state[payload.id],
-        ...payload,
-      },
-    };
-
-  case types.GET_MODEL_TRAINING_SUCCESS:
-    return {
-      ...state,
-      [payload.model.id]: {
-        ...state[payload.model.id],
-        ...payload.model,
-      },
-    };
-*/
 
     default:
       return state;

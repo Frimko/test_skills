@@ -48,8 +48,8 @@ type CallAPIFailureTypeReturnType<T, P extends Object> = {
  */
 export type CallAPIActionType<
   GTypes extends Array<any>,
-  GPayload extends Object,
-  GParseResponseReturn
+  GPayload extends Object = {},
+  GParseResponseReturn = {}
   > =
   CallAPIRequestReturnType<GTypes[0], GPayload>
   | CallAPISuccessReturnType<GTypes[1], GPayload, GParseResponseReturn>
