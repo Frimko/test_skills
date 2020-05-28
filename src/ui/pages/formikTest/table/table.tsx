@@ -89,7 +89,8 @@ const Table: React.FC<TablePropsType> = ({
         ]}
         totalCount={300}
         page={page}
-        data={items.map(item => ({ ...item }))} // FUCK YOU author! https://github.com/mbrn/material-table/issues/1371
+        data={items.map(item => ({ ...item }))}
+        // FUCK YOU author!~```1111`~ https://github.com/mbrn/material-table/issues/1371
         isLoading={isLoading}
         actions={[
           {
